@@ -74,7 +74,7 @@ export default function Signup({navigation}) {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.8}
-                    onPress={()=>navigation.navigate('login')}>
+                    onPress={()=>navigation.navigate('Login')}>
                         <View style={[styles.button, { backgroundColor: "white", borderColor: "#3c5898", borderWidth: 1 }]}>
                             <Text style={{ textAlign: 'center', color: "#3c5898" }}>Log in</Text>
                         </View>

@@ -16,7 +16,7 @@ export default function Splash({navigation}) {
                     Welcome !
                 </Text>
                 <TouchableOpacity activeOpacity={0.8}
-                onPress={()=>navigation.navigate("login")}>
+                onPress={()=>navigation.navigate("Login")}>
                     <View style={styles.button}>
                         <Text style={{textAlign: "center", color: "white"}}>Getting started</Text>
                     </View>

@@ -7,19 +7,23 @@ import Splash from './src/screens/Splash';
 import Signup from './src/screens/Signup';
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native';
+import {createDrawerNavigator} from '@react-navigation/drawer'
+import MainTab from './src/screens/MainTab';
+import DrawerContent from './src/screens/DrawerContent';
 
 //#3c5898
 
 const SplashStack = createStackNavigator()
+const Drawer = createDrawerNavigator()
 
 function SplashScreen() {
   return (
     <SplashStack.Navigator screenOptions={{
       headerShown: false
     }}>
-      <SplashStack.Screen name="splash" component={Splash} />
-      <SplashStack.Screen name="login" component={Login} />
-      <SplashStack.Screen name="signup" component={Signup} />
+      <SplashStack.Screen name="Splash" component={Splash} />
+      <SplashStack.Screen name="Login" component={Login} />
+      <SplashStack.Screen name="Signup" component={Signup} />
     </SplashStack.Navigator>
   )
 }
@@ -35,7 +39,14 @@ export default function App() {
   }
   return (
     <NavigationContainer>
-      <SplashScreen />
+      <Drawer.Navigator
+      drawerContent={() => <DrawerContent />}
+      drawerStyle={{padding: 10}}
+      >
+        <Drawer.Screen name="MainTab" component={MainTab} options={{
+          title: "Home"
+        }} />
+      </Drawer.Navigator>
     </NavigationContainer>
   )
 }
