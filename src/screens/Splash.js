@@ -2,7 +2,7 @@ import React from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable';
 
-export default function Splash() {
+export default function Splash({navigation}) {
     return (
         <View style={styles.container}>
             <View style={styles.splashTop}>
@@ -15,8 +15,11 @@ export default function Splash() {
             color: "black"}}>
                     Welcome !
                 </Text>
-                <TouchableOpacity>
-                    <Text style={styles.button}>Getting started</Text>
+                <TouchableOpacity activeOpacity={0.8}
+                onPress={()=>navigation.navigate("login")}>
+                    <View style={styles.button}>
+                        <Text style={{textAlign: "center", color: "white"}}>Getting started</Text>
+                    </View>
                 </TouchableOpacity>
             </Animatable.View>
         </View>
@@ -40,7 +43,8 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 50,
         marginHorizontal: 10,
         justifyContent: 'center',
-        alignItems: "center"
+        // alignItems: "center",
+        paddingHorizontal: 20
     },
     logo:{ 
         width: 200,
@@ -50,9 +54,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#3c5898",
         color: "white",
         paddingVertical: 15,
-        paddingHorizontal: 30,
+        // paddingHorizontal: 30,
         fontSize: 18,
         borderRadius: 8,
         marginTop: 30,
+        // flexGrow: 1
+        width: "100%"
     }
 })

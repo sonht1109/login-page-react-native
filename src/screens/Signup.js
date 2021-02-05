@@ -3,11 +3,12 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import * as Animatable from 'react-native-animatable';
 import { HelperText, TextInput } from 'react-native-paper'
 
-export default function Login({navigation}) {
+export default function Signup({navigation}) {
 
     const [data, setData] = useState({
         user: '',
-        password: ''
+        password: '',
+        confirmPassword: ''
     })
 
     const checkUser = () => {
@@ -18,6 +19,10 @@ export default function Login({navigation}) {
         return data.password.length < 4 && data.password.length > 0
     }
 
+    const checkConfirmPassword = () => {
+        return data.confirmPassword !== data.password
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.top}>
@@ -25,12 +30,12 @@ export default function Login({navigation}) {
                     fontSize: 36, color: "white", fontWeight: "700",
                     marginLeft: 20
                 }}>
-                    Log in
+                    Sign up
                 </Text>
             </View>
             <Animatable.View
                 animation="fadeInUp"
-                style={[styles.bottom]}>
+                style={styles.bottom}>
                 <ScrollView>
                     <TextInput
                         style={styles.textInput}
@@ -51,16 +56,27 @@ export default function Login({navigation}) {
                     <HelperText type="error" visible={checkPassword()}>
                         Password must be at least 4 characters long
                     </HelperText>
-                    <TouchableOpacity activeOpacity={0.8}
-                    onPress={()=>{}}>
+                    <TextInput
+                        style={styles.textInput}
+                        secureTextEntry={true}
+                        label="Confirm password"
+                        value={data.confirmPassword}
+                        onChangeText={val => setData({ ...data, confirmPassword: val.trim() })}
+                    />
+                    <HelperText type="error" visible={checkConfirmPassword()}>
+                        Password doesnot matches
+                    </HelperText>
+                    <TouchableOpacity activeOpacity={0.8}>
                         <View style={styles.button}>
-                            <Text style={{ textAlign: 'center', color: "white" }}>Log in</Text>
+                            <Text style={{ textAlign: 'center', color: "white" }}>
+                                Sign up
+                            </Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.8}
-                    onPress={()=>navigation.navigate('signup')}>
+                    onPress={()=>navigation.navigate('login')}>
                         <View style={[styles.button, { backgroundColor: "white", borderColor: "#3c5898", borderWidth: 1 }]}>
-                            <Text style={{ textAlign: 'center', color: "#3c5898" }}>Sign up</Text>
+                            <Text style={{ textAlign: 'center', color: "#3c5898" }}>Log in</Text>
                         </View>
                     </TouchableOpacity>
                 </ScrollView>
@@ -85,7 +101,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 50,
         borderTopLeftRadius: 50,
         paddingHorizontal: 20,
-        paddingVertical: 50,
+        paddingVertical: 50
         // justifyContent: "center",
         // alignItems:"center"
     },
