@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import * as Animatable from 'react-native-animatable';
 import { HelperText, TextInput } from 'react-native-paper'
+import { UserContext } from './context';
 
 export default function Login({navigation}) {
 
@@ -17,6 +18,8 @@ export default function Login({navigation}) {
     const checkPassword = () => {
         return data.password.length < 4 && data.password.length > 0
     }
+
+    const {logIn} = useContext(UserContext)
 
     return (
         <View style={styles.container}>
@@ -36,6 +39,7 @@ export default function Login({navigation}) {
                         style={styles.textInput}
                         label="Username"
                         value={data.user}
+                        autoCapitalize={false}
                         onChangeText={val => setData({ ...data, user: val.trim() })}
                     />
                     <HelperText type="error" visible={checkUser()}>
@@ -46,13 +50,14 @@ export default function Login({navigation}) {
                         secureTextEntry={true}
                         label="Password"
                         value={data.password}
+                        autoCapitalize={false}
                         onChangeText={val => setData({ ...data, password: val.trim() })}
                     />
                     <HelperText type="error" visible={checkPassword()}>
                         Password must be at least 4 characters long
                     </HelperText>
                     <TouchableOpacity activeOpacity={0.8}
-                    onPress={()=>{}}>
+                    onPress={()=>{logIn(data)}}>
                         <View style={styles.button}>
                             <Text style={{ textAlign: 'center', color: "white" }}>Log in</Text>
                         </View>
