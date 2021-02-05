@@ -8,9 +8,8 @@ import { UserContext } from './context';
 
 export default function DrawerContent() {
 
-    const [darkmode, setDarkmode] = useState(false)
-    const {colors} = useTheme()
-    const {logOut} = useContext(UserContext)
+    const {colors, dark} = useTheme()
+    const {logOut, switchTheme} = useContext(UserContext)
 
     return (
         <DrawerContentScrollView>
@@ -51,7 +50,7 @@ export default function DrawerContent() {
                     {/* <DrawerItem label="Darkmode" style={{ color: "black" }}
                         icon={() => <Icon name="color-palette-outline" size={20} />} /> */}
                         <Text style={{color: colors.text}}>Dark mode</Text>
-                    <Switch value={darkmode} onValueChange={() => setDarkmode(prev => !prev)} style={{ marginLeft: "auto" }} />
+                    <Switch value={dark} onValueChange={switchTheme} style={{ marginLeft: "auto" }} />
                 </View>
             </Drawer.Section>
 

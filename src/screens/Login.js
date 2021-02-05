@@ -39,7 +39,7 @@ export default function Login({navigation}) {
                         style={styles.textInput}
                         label="Username"
                         value={data.user}
-                        autoCapitalize={false}
+                        autoCapitalize='none'
                         onChangeText={val => setData({ ...data, user: val.trim() })}
                     />
                     <HelperText type="error" visible={checkUser()}>
@@ -50,14 +50,18 @@ export default function Login({navigation}) {
                         secureTextEntry={true}
                         label="Password"
                         value={data.password}
-                        autoCapitalize={false}
+                        autoCapitalize='none'
                         onChangeText={val => setData({ ...data, password: val.trim() })}
                     />
                     <HelperText type="error" visible={checkPassword()}>
                         Password must be at least 4 characters long
                     </HelperText>
                     <TouchableOpacity activeOpacity={0.8}
-                    onPress={()=>{logIn(data)}}>
+                    onPress={()=>{
+                        if(!checkPassword() && !checkUser()){
+                            logIn(data)
+                        }
+                    }}>
                         <View style={styles.button}>
                             <Text style={{ textAlign: 'center', color: "white" }}>Log in</Text>
                         </View>

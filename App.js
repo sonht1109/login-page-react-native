@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useMemo, useReducer, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import { StyleSheet } from 'react-native'
 import Login from './src/screens/Login'
 import Splash from './src/screens/Splash';
@@ -12,6 +12,8 @@ import MainTab from './src/screens/MainTab';
 import DrawerContent from './src/screens/DrawerContent';
 import { UserContext } from './src/screens/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import users from './users'
+import { setEnabled } from 'react-native/Libraries/Performance/Systrace';
 
 //#3c5898
 
@@ -52,55 +54,69 @@ function SplashScreen() {
 
 export default function App() {
 
-  // const [isLoading, setIsLoading] = useState(true)
-  // const [user, setUser] = useState({})
-
   const initState = {
     user: null,
-    isLoading: true
+    isLoading: true,
   }
 
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
+
   const userReducer = (prevState, action) => {
-    switch(action.type){
+    switch (action.type) {
       case "LOG_IN":
-        return{
-          ...prevState,
-          user: {...action.user},
-          isLoading: false
+        const user = action.user
+        if(user){
+          return {
+            ...prevState,
+            user: { ...action.user },
+            isLoading: false
+          }
         }
+        return { ...prevState, isLoading: false }
       case "LOG_OUT":
-        console.log(action)
-        return{
+        return {
           ...prevState,
           user: null,
           isLoading: false
         }
-      default: 
-        return {...state}
+
+      default:
+        return { ...prevState, isLoading: false }
     }
   }
 
   const [state, dispatch] = useReducer(userReducer, initState)
-  console.log(state)
 
   useEffect(() => {
     setTimeout(async () => {
       let user
-      try{
+      try {
         user = await AsyncStorage.getItem('user')
       }
-      catch(e){
+      catch (e) {
         console.log(e)
       }
-      dispatch({type: "LOG_IN", user})
-      // setIsLoading(false)
+      dispatch({ type: "LOG_IN", user })
     }, 1000)
   }, [])
+  console.log(state)
 
-  const userContext = useMemo(()=> (
+  const userContext = useMemo(() => (
     {
-      logIn: user => dispatch({type: "LOG_IN", user}),
-      logOut: () => dispatch({type: "LOG_OUT"}),
+      logIn: async (user) => {
+        if(user){
+          if(users.filter(item => item.user === user.user && user.password === item.password).length > 0){
+            await AsyncStorage.setItem("user", JSON.stringify(user))
+            dispatch({type: "LOG_IN", user})
+          }
+          else Alert.alert('Invalid user !')
+        }
+      },
+      logOut: async() => {
+        await AsyncStorage.removeItem('user')
+        dispatch({ type: "LOG_OUT" })
+      },
+      switchTheme: () => setIsDarkTheme(prev => !prev)
     }
   ), [])
 
@@ -111,16 +127,18 @@ export default function App() {
   }
   return (
     <UserContext.Provider value={userContext}>
-      <NavigationContainer theme={darkTheme}>
-        {state.user !== null
-          ? <Drawer.Navigator
-            drawerContent={() => <DrawerContent />}
-            drawerStyle={{ paddingVertical: 20 }}
-          >
-            <Drawer.Screen name="MainTab" component={MainTab} options={{
-              title: "Home"
-            }} />
-          </Drawer.Navigator>
+      <NavigationContainer theme={isDarkTheme ? darkTheme : lightTheme}>
+        {state.user
+          ? (
+            <Drawer.Navigator
+              drawerContent={() => <DrawerContent />}
+              drawerStyle={{ paddingVertical: 20 }}
+            >
+              <Drawer.Screen name="MainTab" component={MainTab} options={{
+                title: "Home"
+              }} />
+            </Drawer.Navigator>
+          )
           : <SplashScreen />
         }
       </NavigationContainer>

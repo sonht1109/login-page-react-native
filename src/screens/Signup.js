@@ -40,6 +40,7 @@ export default function Signup({navigation}) {
                     <TextInput
                         style={styles.textInput}
                         label="Username"
+                        autoCapitalize='none'
                         value={data.user}
                         onChangeText={val => setData({ ...data, user: val.trim() })}
                     />
@@ -50,6 +51,7 @@ export default function Signup({navigation}) {
                         style={styles.textInput}
                         secureTextEntry={true}
                         label="Password"
+                        autoCapitalize='none'
                         value={data.password}
                         onChangeText={val => setData({ ...data, password: val.trim() })}
                     />
@@ -60,6 +62,7 @@ export default function Signup({navigation}) {
                         style={styles.textInput}
                         secureTextEntry={true}
                         label="Confirm password"
+                        autoCapitalize='none'
                         value={data.confirmPassword}
                         onChangeText={val => setData({ ...data, confirmPassword: val.trim() })}
                     />
