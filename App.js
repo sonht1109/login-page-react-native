@@ -89,17 +89,18 @@ export default function App() {
 
   useEffect(() => {
     setTimeout(async () => {
-      let user
+      let user, isDarkTheme
       try {
         user = await AsyncStorage.getItem('user')
+        isDarkTheme = await AsyncStorage.getItem("dark-theme")
       }
       catch (e) {
         console.log(e)
       }
+      if(isDarkTheme) setIsDarkTheme(isDarkTheme === 'true' ? true : false)
       dispatch({ type: "LOG_IN", user })
     }, 1000)
   }, [])
-  console.log(state)
 
   const userContext = useMemo(() => (
     {
@@ -116,7 +117,15 @@ export default function App() {
         await AsyncStorage.removeItem('user')
         dispatch({ type: "LOG_OUT" })
       },
-      switchTheme: () => setIsDarkTheme(prev => !prev)
+      switchTheme: async() => {
+        setIsDarkTheme(prev => !prev)
+        try{
+          await AsyncStorage.setItem("dark-theme", isDarkTheme.toString())
+        }
+        catch(e){
+          console.log(e)
+        }
+      }
     }
   ), [])
 
