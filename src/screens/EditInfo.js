@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { Keyboard, StyleSheet, Text, View } from 'react-native'
 import { Avatar, HelperText } from 'react-native-paper'
 import { Caption, Title, TextInput } from 'react-native-paper'
 import { useTheme } from '@react-navigation/native';
@@ -24,6 +24,15 @@ export default function EditInfo() {
 
     const bs = useRef()
     const fall = new Animated.Value(1)
+    // 1: hide, 0: show
+
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", () => {
+            if(bs.current){
+                bs.current.snapTo(1)
+            }
+        })
+    }, [])
 
     const checkUser = () => {
         return user.age !== '' && user.address !== '' && user.email !== '' && user.phone !== ''
@@ -31,7 +40,7 @@ export default function EditInfo() {
 
     const handleTakeAPhoto = () => {
         ImagePicker.openCamera({
-            compressImageQuality: 0.7,
+            compressImageQuality: 0.6,
             width: 300,
             height: 300,
             cropping: true,
@@ -39,7 +48,7 @@ export default function EditInfo() {
             setAvt(image.path)
             bs.current.snapTo(1)
         })
-        .catch(err => console.log(err))
+            .catch(err => console.log(err))
     }
 
     const handleGetPhotoFromGallery = () => {
@@ -51,7 +60,7 @@ export default function EditInfo() {
             setAvt(image.path)
             bs.current.snapTo(1)
         })
-        .catch(err => console.log(err))
+            .catch(err => console.log(err))
     }
 
     const handleDiscardAvatar = () => {
@@ -102,7 +111,8 @@ export default function EditInfo() {
 
     return (
         <View style={styles.container}>
-            <BottomSheet ref={bs}
+            <BottomSheet
+                ref={bs}
                 snapPoints={[320, 0]}
                 initialSnap={1}
                 callbackNode={fall}
@@ -150,8 +160,6 @@ export default function EditInfo() {
                                     primary: colors.input
                                 }
                             }}
-                            // underlineColor={colors.text}
-                            selectionColor="white"
                             keyboardType="number-pad"
                             value={user.age} onChangeText={val => setUser({ ...user, age: val })}
                         />
@@ -165,14 +173,12 @@ export default function EditInfo() {
                                     primary: colors.input
                                 }
                             }}
-                            // underlineColor={colors.text}
                             value={user.email} onChangeText={val => setUser({ ...user, email: val })}
                         />
                         <HelperText visible={!checkUser()} type='error'>
                             Please fill all fields
                         </HelperText>
                         <TextInput style={styles.textInput} label="Phone"
-                            // underlineColor={colors.text}
                             keyboardType="number-pad"
                             theme={{
                                 colors: {
@@ -186,7 +192,6 @@ export default function EditInfo() {
                             Please fill all fields
                         </HelperText>
                         <TextInput style={styles.textInput} label="Address"
-                            // underlineColor={colors.text}
                             theme={{
                                 colors: {
                                     primary: colors.input,
@@ -228,6 +233,7 @@ const styles = StyleSheet.create({
     bsHeader: {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
+        borderColor: "black",
         justifyContent: "center",
         alignItems: 'center',
         backgroundColor: "white",
@@ -238,7 +244,7 @@ const styles = StyleSheet.create({
         },
         shadowColor: 'black',
         shadowOpacity: 1,
-        elevation: 2 //android
+        elevation: 2 //android,
     },
     bsContent: {
         backgroundColor: "white",
