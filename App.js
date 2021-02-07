@@ -13,7 +13,7 @@ import DrawerContent from './src/screens/DrawerContent';
 import { UserContext } from './src/screens/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import users from './users'
-import { setEnabled } from 'react-native/Libraries/Performance/Systrace';
+import ProfileTab from './src/screens/Profile';
 
 //#3c5898
 
@@ -26,7 +26,9 @@ const lightTheme = {
     ...DefaultTheme.colors,
     primary: "#3c5898",
     text: "black",
-    caption: "gray"
+    caption: "gray",
+    title: "#525252",
+    button: "#3c5898"
   }
 }
 
@@ -34,9 +36,11 @@ const darkTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    primary: "#1a1a1a",
+    primary: "black",
     text: "white",
-    caption: "gray"
+    caption: "gray",
+    title: "#b6b6b6",
+    button: "#2d2d2d"
   }
 }
 
@@ -65,7 +69,7 @@ export default function App() {
     switch (action.type) {
       case "LOG_IN":
         const user = action.user
-        if(user){
+        if (user) {
           return {
             ...prevState,
             user: { ...action.user },
@@ -97,7 +101,7 @@ export default function App() {
       catch (e) {
         console.log(e)
       }
-      if(isDarkTheme) setIsDarkTheme(isDarkTheme === 'true' ? true : false)
+      if (isDarkTheme) setIsDarkTheme(isDarkTheme === 'true' ? true : false)
       dispatch({ type: "LOG_IN", user })
     }, 1000)
   }, [])
@@ -105,24 +109,24 @@ export default function App() {
   const userContext = useMemo(() => (
     {
       logIn: async (user) => {
-        if(user){
-          if(users.filter(item => item.user === user.user && user.password === item.password).length > 0){
+        if (user) {
+          if (users.filter(item => item.user === user.user && user.password === item.password).length > 0) {
             await AsyncStorage.setItem("user", JSON.stringify(user))
-            dispatch({type: "LOG_IN", user})
+            dispatch({ type: "LOG_IN", user })
           }
           else Alert.alert('Invalid user !')
         }
       },
-      logOut: async() => {
+      logOut: async () => {
         await AsyncStorage.removeItem('user')
         dispatch({ type: "LOG_OUT" })
       },
-      switchTheme: async() => {
+      switchTheme: async () => {
         setIsDarkTheme(prev => !prev)
-        try{
+        try {
           await AsyncStorage.setItem("dark-theme", isDarkTheme.toString())
         }
-        catch(e){
+        catch (e) {
           console.log(e)
         }
       }
@@ -140,12 +144,11 @@ export default function App() {
         {state.user
           ? (
             <Drawer.Navigator
-              drawerContent={() => <DrawerContent />}
+              drawerContent={(props) => <DrawerContent {...props} />}
               drawerStyle={{ paddingVertical: 20 }}
             >
-              <Drawer.Screen name="MainTab" component={MainTab} options={{
-                title: "Home"
-              }} />
+              <Drawer.Screen name="MainTab" component={MainTab} />
+              <Drawer.Screen name="ProfileTab" component={ProfileTab} />
             </Drawer.Navigator>
           )
           : <SplashScreen />

@@ -23,7 +23,7 @@ function NewFeedStack({navigation}) {
                 headerStyle: {
                     backgroundColor: "#3c5898",
                 },
-                headerTintColor: "white"
+                title: ''
             }} />
             <HomeStack.Screen name="Detail" component={Detail} />
         </HomeStack.Navigator>
