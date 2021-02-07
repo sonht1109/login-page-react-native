@@ -1,7 +1,7 @@
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer'
-import { useNavigation, useTheme } from '@react-navigation/native'
-import React, { useContext, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import {  useTheme } from '@react-navigation/native'
+import React, { useContext } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 import { Avatar, Caption, Divider, Drawer, Paragraph, Switch, Title } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { UserContext } from './context';
@@ -50,7 +50,7 @@ export default function DrawerContent({ navigation }) {
                 <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingVertical: 20 }}>
                     {/* <DrawerItem label="Darkmode" style={{ color: "black" }}
                         icon={() => <Icon name="color-palette-outline" size={20} />} /> */}
-                    <Text style={{ color: colors.text }}>Dark mode</Text>
+                    <Text style={{ color: colors.text }}>Dark Mode</Text>
                     <Switch value={dark} onValueChange={switchTheme} style={{ marginLeft: "auto" }} />
                 </View>
             </Drawer.Section>

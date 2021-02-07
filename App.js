@@ -28,7 +28,8 @@ const lightTheme = {
     text: "black",
     caption: "gray",
     title: "#525252",
-    button: "#3c5898"
+    button: "#3c5898",
+    input: "#3c5898"
   }
 }
 
@@ -40,7 +41,8 @@ const darkTheme = {
     text: "white",
     caption: "gray",
     title: "#b6b6b6",
-    button: "#2d2d2d"
+    button: "#2d2d2d",
+    input: "white"
   }
 }
 
