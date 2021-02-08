@@ -11,22 +11,45 @@ import NewFeed from './NewFeed';
 
 const Tab = createMaterialBottomTabNavigator()
 const HomeStack = createStackNavigator()
+const NotiStack = createStackNavigator()
 
-function NewFeedStack({navigation}) {
+const headerLeft = (navigation) => {
+    return (
+        <Icon name="menu-outline" size={25} color="white"
+            onPress={() => navigation.openDrawer()} style={{ marginLeft: 20 }} />
+    )
+}
+
+function NewFeedStack({ navigation }) {
     return (
         <HomeStack.Navigator>
             <HomeStack.Screen name="NewFeed" component={NewFeed}
-            options={{
-                headerLeft:
-                ()=><Icon name="menu-outline" size={25} color="white"
-                onPress={() => navigation.openDrawer()} style={{marginLeft: 20}} />,
-                headerStyle: {
-                    backgroundColor: "#3c5898",
-                },
-                title: ''
-            }} />
+                options={{
+                    headerLeft: () => headerLeft(navigation),
+                    headerStyle: {
+                        backgroundColor: "#3c5898",
+                    },
+                    title: ''
+                }}
+            />
             <HomeStack.Screen name="Detail" component={Detail} />
         </HomeStack.Navigator>
+    )
+}
+
+function NotificationStack({ navigation }) {
+    return (
+        <NotiStack.Navigator>
+            <NotiStack.Screen name="Notifications" component={Notifications}
+                options={{
+                    headerLeft: () => headerLeft(navigation),
+                    headerStyle: {
+                        backgroundColor: "#3c5898",
+                    },
+                    title: ""
+                }}
+            />
+        </NotiStack.Navigator>
     )
 }
 
@@ -44,10 +67,11 @@ export default function MainTab() {
                     tabBarIcon: ({ focused }) => <Icon name="play-circle-outline" size={20} color={focused ? "white" : "#b2c9ed"} />,
                     tabBarColor: "black"
                 }} />
-            <Tab.Screen name="Notifications" component={Notifications}
+            <Tab.Screen name="NotificationStack" component={NotificationStack}
                 options={{
                     tabBarIcon: ({ focused }) => <Icon name="notifications-outline" size={20} color={focused ? "white" : "#b2c9ed"} />,
-                    tabBarColor: "#3c5898"
+                    tabBarColor: "#3c5898",
+                    title: "Notifications"
                 }} />
             <Tab.Screen name="Friends" component={Friends}
                 options={{
