@@ -1,148 +1,305 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import notifications from './notificationsList'
-import { useTheme } from '@react-navigation/native';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import Icon from 'react-native-vector-icons/Ionicons'
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TouchableHighlight,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
 
-export default function Notifications() {
+import {SwipeListView} from 'react-native-swipe-list-view';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-    const [notis, setNotis] = useState(notifications.map((item, i) => ({
-        key: `${i}`,
-        title: item.title
-    })))
-    const [heights, setHeights] = useState([])
-    const { colors } = useTheme()
+import notifications from './notificationsList';
 
-    const onLayout = index => ({ nativeEvent }) => {
-        // let tempHeights = [...heights]
-        // tempHeights[index] = nativeEvent.layout.height
-        // setHeights([...tempHeights])
+const NotificationScreen = ({navigation}) => {
+  const [listData, setListData] = useState(
+    notifications.map((NotificationItem, index) => ({
+      key: `${index}`,
+      title: NotificationItem.title,
+      details: NotificationItem.details,
+    })),
+  );
+
+  const closeRow = (rowMap, rowKey) => {
+    if (rowMap[rowKey]) {
+      rowMap[rowKey].closeRow();
     }
+  };
 
-    const handleDeleteRow = (rowMap, rowKey) => {
-        let tempList = [...notis]
-        let index = tempList.findIndex(item => item.key === rowKey)
-        if (index !== -1) tempList.splice(index, 1)
-        setNotis([...tempList])
-    }
+  const deleteRow = (rowMap, rowKey) => {
+    closeRow(rowMap, rowKey);
+    const newData = [...listData];
+    const prevIndex = listData.findIndex(item => item.key === rowKey);
+    newData.splice(prevIndex, 1);
+    setListData(newData);
+  };
 
-    const handleCloseRow = (rowMap, rowKey) => {
-        console.log(rowMap[rowKey])
-        rowMap[rowKey].closeRow()
-    }
+  const onRowDidOpen = rowKey => {
+    console.log('This row opened', rowKey);
+  };
 
-    const renderItem = (data, rowMap) => {
-        return (
-            <View
-                onLayout={onLayout(data.index)}
-                style={[styles.rowFront, { backgroundColor: colors.button }]}
-            >
-                <Text style={{ color: "white" }} numberOfLines={1} ellipsizeMode="tail">
-                    {data.item.title}
-                </Text>
-            </View>
-        )
-    }
+  const onLeftActionStatusChange = rowKey => {
+    console.log('onLeftActionStatusChange', rowKey);
+  };
 
-    const renderHiddenItem = (data, rowMap) => {
-        return (
-            <View style={[styles.rowBack]}>
-                {/* archive */}
-                <View style={[styles.hiddenLeftButton, { backgroundColor: "#32a852" }]}>
-                    <TouchableOpacity activeOpacity={0.8}>
-                        <View style={[styles.hiddenButton]}>
-                            <Icon name="archive-outline" size={22} color="white"
-                                style={styles.innerHiddenButton} />
-                        </View>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: "row" }}>
-                    {/* close */}
-                    <View>
-                        <TouchableOpacity activeOpacity={0.8}
-                            onPress={() => handleCloseRow(rowMap, data.item.key)}
-                        >
-                            <View style={[{ backgroundColor: "#7bb0e3" }, styles.hiddenButton]}>
-                                <Icon name="close-circle-outline" size={22} color="white"
-                                    style={styles.innerHiddenButton} />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    {/* delete */}
-                    <View style={[styles.hiddenButton, { backgroundColor: "#de4343" }]}>
-                        <TouchableOpacity activeOpacity={0.8}
-                            onPress={() => handleDeleteRow(rowMap, data.item.key)}
-                            style={{ width: "100%" }}
-                        >
-                            <View style={[{ backgroundColor: "#de4343" }, styles.hiddenButton,
-                            styles.hiddenRightButton]}>
-                                <Icon name='trash-bin-outline' size={25} color="white"
-                                    style={styles.innerHiddenButton} />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        )
+  const onRightActionStatusChange = rowKey => {
+    console.log('onRightActionStatusChange', rowKey);
+  };
+
+  const onRightAction = rowKey => {
+    console.log('onRightAction', rowKey);
+  };
+
+  const onLeftAction = rowKey => {
+    console.log('onLeftAction', rowKey);
+  };
+
+  const VisibleItem = props => {
+    const {
+      data,
+      rowHeightAnimatedValue,
+      removeRow,
+      leftActionState,
+      rightActionState,
+    } = props;
+
+    if (rightActionState) {
+      Animated.timing(rowHeightAnimatedValue, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        removeRow();
+      });
     }
 
     return (
-        <SwipeListView
-            closeOnRowPress={true}
-            data={notis}
-            renderItem={(data, rowMap) => renderItem(data, rowMap)}
-            renderHiddenItem={(data, rowMap) => renderHiddenItem(data, rowMap)}
-            leftOpenValue={75}
-            rightOpenValue={-150}
-            recalculateHiddenLayout={true}
-            rightActionValue={-200}
-        />
-    )
-}
+      <Animated.View
+        style={[styles.rowFront, {height: rowHeightAnimatedValue}]}>
+        <TouchableHighlight
+          style={styles.rowFrontVisible}
+          onPress={() => console.log('Element touched')}
+          underlayColor={'#aaa'}>
+          <View>
+            <Text style={styles.title} numberOfLines={1}>
+              {data.item.title}
+            </Text>
+            <Text style={styles.details} numberOfLines={1}>
+              {data.item.details}
+            </Text>
+          </View>
+        </TouchableHighlight>
+      </Animated.View>
+    );
+  };
 
+  const renderItem = (data, rowMap) => {
+    const rowHeightAnimatedValue = new Animated.Value(60);
+
+    return (
+      <VisibleItem
+        data={data}
+        rowHeightAnimatedValue={rowHeightAnimatedValue}
+        removeRow={() => deleteRow(rowMap, data.item.key)}
+      />
+    );
+  };
+
+  const HiddenItemWithActions = props => {
+    const {
+      swipeAnimatedValue,
+      leftActionActivated,
+      rightActionActivated,
+      rowActionAnimatedValue,
+      rowHeightAnimatedValue,
+      onClose,
+      onDelete,
+    } = props;
+
+    if (rightActionActivated) {
+      Animated.spring(rowActionAnimatedValue, {
+        toValue: 500,
+        useNativeDriver: false
+      }).start();
+    } else {
+      Animated.spring(rowActionAnimatedValue, {
+        toValue: 75,
+        useNativeDriver: false
+      }).start();
+    }
+
+    return (
+      <Animated.View style={[styles.rowBack, {height: rowHeightAnimatedValue}]}>
+        <Text>Left</Text>
+        {!leftActionActivated && (
+          <TouchableOpacity
+            style={[styles.backRightBtn, styles.backRightBtnLeft]}
+            onPress={onClose}>
+            <MaterialCommunityIcons
+              name="close-circle-outline"
+              size={25}
+              style={styles.trash}
+              color="#fff"
+            />
+          </TouchableOpacity>
+        )}
+        {!leftActionActivated && (
+          <Animated.View
+            style={[
+              styles.backRightBtn,
+              styles.backRightBtnRight,
+              {
+                flex: 1,
+                width: rowActionAnimatedValue,
+              },
+            ]}>
+            <TouchableOpacity
+              style={[styles.backRightBtn, styles.backRightBtnRight]}
+              onPress={onDelete}>
+              <Animated.View
+                style={[
+                  styles.trash,
+                  {
+                    transform: [
+                      {
+                        scale: swipeAnimatedValue.interpolate({
+                          inputRange: [-90, -45],
+                          outputRange: [1, 0],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ],
+                  },
+                ]}>
+                <MaterialCommunityIcons
+                  name="trash-can-outline"
+                  size={25}
+                  color="#fff"
+                />
+              </Animated.View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </Animated.View>
+    );
+  };
+
+  const renderHiddenItem = (data, rowMap) => {
+    const rowActionAnimatedValue = new Animated.Value(75);
+    const rowHeightAnimatedValue = new Animated.Value(60);
+
+    return (
+      <HiddenItemWithActions
+        data={data}
+        rowMap={rowMap}
+        rowActionAnimatedValue={rowActionAnimatedValue}
+        rowHeightAnimatedValue={rowHeightAnimatedValue}
+        onClose={() => closeRow(rowMap, data.item.key)}
+        onDelete={() => deleteRow(rowMap, data.item.key)}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content"/>
+      {/* <StatusBar backgroundColor="#FF6347" barStyle="light-content"/> */}
+      <SwipeListView
+        data={listData}
+        renderItem={renderItem}
+        renderHiddenItem={renderHiddenItem}
+        leftOpenValue={75}
+        rightOpenValue={-150}
+        disableRightSwipe
+        onRowDidOpen={onRowDidOpen}
+        leftActivationValue={100}
+        rightActivationValue={-200}
+        leftActionValue={0}
+        rightActionValue={-500}
+        onLeftAction={onLeftAction}
+        onRightAction={onRightAction}
+        onLeftActionStatusChange={onLeftActionStatusChange}
+        onRightActionStatusChange={onRightActionStatusChange}
+      />
+    </View>
+  );
+};
+
+export default NotificationScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    rowFront: {
-        marginHorizontal: 20,
-        marginVertical: 5,
-        padding: 10,
-        borderRadius: 5,
-        elevation: 5,
-        shadowColor: "#000000",
-        shadowOffset: {
-            width: 10,
-            height: 10
-        },
-        shadowOpacity: 1,
-        height: 60,
-        justifyContent: "center"
-    },
-    rowBack: {
-        flexDirection: "row",
-        marginHorizontal: 20,
-        marginVertical: 5,
-        justifyContent: 'space-between',
-    },
-    hiddenButton: {
-        width: 75,
-        height: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    innerHiddenButton: {
-        color: "white", textAlign: "center"
-    },
-    hiddenRightButton: {
-        borderTopRightRadius: 5,
-        borderBottomRightRadius: 5,
-    },
-    hiddenLeftButton: {
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 5
-    }
-})
+  container: {
+    backgroundColor: '#f4f4f4',
+    flex: 1,
+  },
+  backTextWhite: {
+    color: '#FFF',
+  },
+  rowFront: {
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    height: 60,
+    margin: 5,
+    marginBottom: 15,
+    shadowColor: '#999',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  rowFrontVisible: {
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+    height: 60,
+    padding: 10,
+    marginBottom: 15,
+  },
+  rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#DDD',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 15,
+    margin: 5,
+    marginBottom: 15,
+    borderRadius: 5,
+  },
+  backRightBtn: {
+    alignItems: 'flex-end',
+    bottom: 0,
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 0,
+    width: 75,
+    paddingRight: 17,
+  },
+  backRightBtnLeft: {
+    backgroundColor: '#1f65ff',
+    right: 75,
+  },
+  backRightBtnRight: {
+    backgroundColor: 'red',
+    right: 0,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  trash: {
+    height: 25,
+    width: 25,
+    marginRight: 7,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#666',
+  },
+  details: {
+    fontSize: 12,
+    color: '#999',
+  },
+});
